@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">DigitalClock</string>
+    <string name="title_alarm">Alarm</string>
+    <string name="title_clock">Clock</string>
+    <string name="title_timer">Timer</string>
+    <string name="title_stopwatch">Stopwatch</string>
+    <string name="settings">Settings</string>
+</resources>

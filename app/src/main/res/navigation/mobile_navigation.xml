@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.example.digitalclock.ui.clock.ClockFragment"
+        android:label="@string/title_clock"
+        tools:layout="@layout/fragment_clock" />
+
+    <fragment
+        android:id="@+id/navigation_dashboard"
+        android:name="com.example.digitalclock.ui.alarm.AlarmFragment"
+        android:label="@string/title_alarm"
+        tools:layout="@layout/fragment_alarm" />
+
+    <fragment
+        android:id="@+id/navigation_notifications"
+        android:name="com.example.digitalclock.ui.timer.TimerFragment"
+        android:label="@string/title_timer"
+        tools:layout="@layout/fragment_timer" />
+
+    <fragment
+        android:id="@+id/navigation_stopwatch"
+        android:name="com.example.digitalclock.ui.stopwatch.StopwatchFragment"
+        android:label="@string/title_stopwatch"
+        tools:layout="@layout/fragment_stopwatch" />
+
+</navigation>
