@@ -3,22 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_clock">
 
     <fragment
-        android:id="@+id/navigation_home"
+        android:id="@+id/navigation_clock"
         android:name="com.example.digitalclock.ui.clock.ClockFragment"
         android:label="@string/title_clock"
         tools:layout="@layout/fragment_clock" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
+        android:id="@+id/navigation_alarm"
         android:name="com.example.digitalclock.ui.alarm.AlarmFragment"
         android:label="@string/title_alarm"
         tools:layout="@layout/fragment_alarm" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
+        android:id="@+id/navigation_timer"
         android:name="com.example.digitalclock.ui.timer.TimerFragment"
         android:label="@string/title_timer"
         tools:layout="@layout/fragment_timer" />

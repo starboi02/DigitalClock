@@ -3,6 +3,8 @@ package com.example.digitalclock.ui.stopwatch;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -45,12 +47,14 @@ public class StopwatchFragment extends Fragment {
     public String displayTime="00:00:00 00";
     public long startTime,prevTime=0,elapsedMiliseconds;
     private int seconds = 0;
-    private boolean running;
+    private boolean running=false;
     private boolean wasRunning;
+    Thread myThread = null;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        Log.d("stopwatch","created");
         stopwatchViewModel =
                 new ViewModelProvider(this).get(StopwatchViewModel.class);
         View root = inflater.inflate(R.layout.fragment_stopwatch, container, false);
@@ -69,12 +73,23 @@ public class StopwatchFragment extends Fragment {
             }
         });
 
-        Thread myThread = null;
+        SharedPreferences preferences =getActivity().getSharedPreferences("stopwatch_running",Context.MODE_PRIVATE);
+        boolean wasRunning = preferences.getBoolean("wasRunning",false);
+
+        Log.d("thread_running",String.valueOf(running));
+
+        if(wasRunning) {
+            running=true;
+            imageButton.setImageResource(R.drawable.ic_pause);
+            imageButton.setTag(R.drawable.ic_pause);
+            startTime=preferences.getLong("startTime",0 );
+            prevTime=preferences.getLong("prevTime",0);
+            restart.setVisibility(View.INVISIBLE);
+        }
 
         Runnable runnable = new TimeShow();
-        myThread= new Thread(runnable);
+        myThread = new Thread(runnable);
         myThread.start();
-
 
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,16 +111,20 @@ public class StopwatchFragment extends Fragment {
             }
         });
 
-
-
-
         return root;
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        running = false;
+        //myThread.stop();
+        //running = false;
+        SharedPreferences.Editor editor = getActivity().getSharedPreferences("stopwatch_running", Context.MODE_PRIVATE).edit();
+        editor.putBoolean("wasRunning",running);
+        editor.putLong("startTime",startTime);
+        editor.putLong("prevTime",prevTime);
+        editor.apply();
+
         Log.d("stopwatch","paused");
     }
 
@@ -115,6 +134,11 @@ public class StopwatchFragment extends Fragment {
         Log.d("stopwatch","resumed");
     }
 
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        Log.d("stopwatch","destroyed");
+    }
     class TimeShow implements Runnable{
         public void run() {
             while(!Thread.currentThread().isInterrupted()){
@@ -123,7 +147,7 @@ public class StopwatchFragment extends Fragment {
                         elapsedMiliseconds = (System.nanoTime()  - startTime) / 1000000 + prevTime;
                         updateTime(elapsedMiliseconds);
                         Thread.sleep(10);
-                        Log.d("Stopwatch_thread","running");
+                        //Log.d("Stopwatch_thread","running");
                     }
 
                 } catch (InterruptedException e) {

@@ -2,17 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/navigation_home"
+        android:id="@+id/navigation_clock"
         android:icon="@drawable/ic_clock"
         android:title="@string/title_clock" />
 
     <item
-        android:id="@+id/navigation_dashboard"
+        android:id="@+id/navigation_alarm"
         android:icon="@drawable/ic_alarm"
         android:title="@string/title_alarm" />
 
     <item
-        android:id="@+id/navigation_notifications"
+        android:id="@+id/navigation_timer"
         android:icon="@drawable/ic_timer"
         android:title="@string/title_timer" />
 

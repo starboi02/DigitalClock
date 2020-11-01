@@ -7,18 +7,120 @@
     tools:context=".ui.timer.TimerFragment">
 
     <TextView
-        android:id="@+id/text_notifications"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
+        android:id="@+id/time"
+        android:visibility="gone"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_gravity="center"
+        android:background="@drawable/circle"
+        android:layout_marginBottom="80dp"
         android:fontFamily="@font/montserrat"
+        android:gravity="center"
+        android:textSize="30sp"
+        android:text="00:00:00"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:gravity="center_horizontal" />
+        app:layout_constraintTop_toTopOf="parent" />
+    <LinearLayout
+        android:id="@+id/edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="100dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:gravity="center_horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" >
+        <EditText
+            android:id="@+id/hour"
+            android:layout_width="50dp"
+            android:textSize="30sp"
+            android:layout_height="60dp"
+            android:hint="00"
+            android:fontFamily="@font/montserrat"
+            android:inputType="number"
+            android:maxLength="2"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:fontFamily="@font/montserrat"
+            android:text="h"
+            android:layout_marginRight="10dp"
+            />
+        <EditText
+            android:id="@+id/minute"
+            android:layout_width="50dp"
+            android:textSize="30sp"
+            android:hint="00"
+            android:layout_height="60dp"
+            android:fontFamily="@font/montserrat"
+            android:inputType="number"
+            android:maxLength="2"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:fontFamily="@font/montserrat"
+            android:text="m"
+            android:layout_marginRight="10dp"
+            />
+        <EditText
+            android:id="@+id/second"
+            android:layout_width="50dp"
+            android:textSize="30sp"
+            android:layout_height="60dp"
+            android:hint="00"
+            android:fontFamily="@font/montserrat"
+            android:inputType="number"
+            android:maxLength="2"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat"
+            android:textSize="20sp"
+            android:text="s"
+            />
+    </LinearLayout>
+    <ImageButton
+        android:id="@+id/btn"
+        android:background="@drawable/solid_circle"
+        android:src="@drawable/ic_play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="88dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+    <TextView
+        android:id="@+id/delete"
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delete"
+        android:fontFamily="@font/montserrat"
+        android:textSize="20sp"
+        android:layout_marginBottom="100dp"
+        android:layout_marginRight="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn"
+        />
+    <TextView
+        android:id="@+id/reset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reset"
+        android:visibility="invisible"
+        android:fontFamily="@font/montserrat"
+        android:textSize="20sp"
+        android:layout_marginBottom="100dp"
+        android:layout_marginLeft="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btn"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>
