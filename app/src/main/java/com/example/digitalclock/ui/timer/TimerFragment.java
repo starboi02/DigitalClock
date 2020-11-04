@@ -210,11 +210,6 @@ public class TimerFragment extends Fragment {
 
         running=false;
 
-//        SharedPreferences.Editor editor = getActivity().getSharedPreferences("timer_running", Context.MODE_PRIVATE).edit();
-//        editor.putBoolean("wasRunning",running);
-//        editor.putLong("pausedTime",System.nanoTime()/1000000000);
-//        editor.putLong("timerTime",timerTime);
-//        editor.apply();
 
         Log.d("stopwatch","paused");
     }
