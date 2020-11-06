@@ -1,6 +1,8 @@
 # DigitalClock
 Digital Clock for android with timer, stopwatch and alarm support.
 
+## Screenshots
+
 ![](https://user-images.githubusercontent.com/58038202/98367632-fa657d00-205b-11eb-978c-a5484e7d4110.jpeg)
 
 ![](https://user-images.githubusercontent.com/58038202/98367734-254fd100-205c-11eb-9da8-5871055352b3.jpeg)
