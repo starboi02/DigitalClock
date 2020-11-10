@@ -1,12 +1,16 @@
 package com.example.digitalclock.ui.alarm;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.BlendMode;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,15 +29,28 @@ import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import com.example.digitalclock.R;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.gson.Gson;
 
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
+
 import java.lang.reflect.Array;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+
+import static android.content.Context.ALARM_SERVICE;
 
 public class AlarmFragment extends Fragment implements View.OnClickListener {
 
@@ -49,6 +66,7 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
     LinearLayout days;
     TextView delete,timer;
     TextView sun,mon,tue,wed,thu,fri,sat;
+    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
     ArrayList<String> daysOfWeek= new ArrayList<>(Arrays.asList("Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"));
     ArrayList<String> daysOfAlarm= new ArrayList<>(Arrays.asList("Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"));
 
@@ -105,6 +123,29 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
             loadAlarm();
         }
 
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alarmItem.setActive(false);
+                SharedPreferences preferences1 =getActivity().getSharedPreferences("alarm",Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor= preferences1.edit();
+                editor.putInt("count",0);
+                Gson gson = new Gson();
+                String json = gson.toJson(alarmItem);
+                editor.putString("alarmItem",json);
+                editor.apply();
+                edit.setVisibility(View.VISIBLE);
+                add_btn.setVisibility(View.VISIBLE);
+                item.setVisibility(View.INVISIBLE);
+
+                AlarmManager alarmManager= (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
+                Intent intent = new Intent(getContext(), AlarmService.class);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                        getActivity().getApplicationContext(), 234324243, intent, 0);
+                alarmManager.cancel(pendingIntent);
+
+            }
+        });
 
         add_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,6 +156,9 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
                 else{
                     h=hour.getText().toString();
                     m=minute.getText().toString();
+                    if(h.length()==1){
+                        h="0"+h;
+                    }
 
                     setAlarm(h,m);
 
@@ -176,11 +220,39 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
 
     }
 
+    public void startAlarm(){
+        long milli=0;
+        try {
+            Date currentTime = new Date();
+            Date fixedTime = sdf.parse(alarmItem.getTime());
+            currentTime = sdf.parse(sdf.format(currentTime));
+            if(currentTime.getTime()>fixedTime.getTime()){
+                milli= currentTime.getTime()-fixedTime.getTime() + 24*3600*1000;
+            }
+            else{
+                milli=fixedTime.getTime()-currentTime.getTime();
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Toast.makeText(getContext(),"Set!",Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(getContext(), AlarmService.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                getActivity().getApplicationContext(), 234324243, intent, 0);
+        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()
+                    + milli, pendingIntent);
+        }
+        Log.d("alarm","set");
+    }
+
     public void setAlarm(String h, String m){
         alarmItem = new AlarmItem(h+":"+m,true,false);
         toggle.setChecked(true);
         alarmItem.setDays(daysOfWeek);
         saveAlarmDetails();
+        startAlarm();
     }
 
     public void checkDaysOfAlarmArray(View view){
