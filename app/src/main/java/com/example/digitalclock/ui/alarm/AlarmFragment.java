@@ -10,6 +10,7 @@ import android.graphics.BlendMode;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,7 +41,14 @@ import com.google.gson.Gson;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Array;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -67,6 +75,7 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
     TextView delete,timer;
     TextView sun,mon,tue,wed,thu,fri,sat;
     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+    SimpleDateFormat sdf1 = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
     ArrayList<String> daysOfWeek= new ArrayList<>(Arrays.asList("Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"));
     ArrayList<String> daysOfAlarm= new ArrayList<>(Arrays.asList("Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"));
 
@@ -159,7 +168,6 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
                     if(h.length()==1){
                         h="0"+h;
                     }
-
                     setAlarm(h,m);
 
                     edit.setVisibility(View.INVISIBLE);
@@ -225,7 +233,7 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
         try {
             Date currentTime = new Date();
             Date fixedTime = sdf.parse(alarmItem.getTime());
-            currentTime = sdf.parse(sdf.format(currentTime));
+            currentTime = sdf1.parse(sdf1.format(currentTime));
             if(currentTime.getTime()>fixedTime.getTime()){
                 milli= currentTime.getTime()-fixedTime.getTime() + 24*3600*1000;
             }
@@ -237,6 +245,7 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
         }
         Toast.makeText(getContext(),"Set!",Toast.LENGTH_LONG).show();
         Intent intent = new Intent(getContext(), AlarmService.class);
+        downloadFile("https://www.fesliyanstudios.com/soundeffects-download.php?id=4434","monday", Environment.getStorageDirectory().toString()+"/DigitalClock");
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 getActivity().getApplicationContext(), 234324243, intent, 0);
         AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
@@ -245,6 +254,7 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
                     + milli, pendingIntent);
         }
         Log.d("alarm","set");
+        Log.d("milli", String.valueOf(milli));
     }
 
     public void setAlarm(String h, String m){
@@ -264,6 +274,80 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    static void downloadFile(String dwnload_file_path, String fileName,
+                             String pathToSave) {
+        int downloadedSize = 0;
+        int totalSize = 0;
+
+        try {
+            URL url = new URL(dwnload_file_path);
+            HttpURLConnection urlConnection = (HttpURLConnection) url
+                    .openConnection();
+
+            urlConnection.setRequestMethod("POST");
+            urlConnection.setDoOutput(true);
+
+            // connect
+            urlConnection.connect();
+
+            File myDir;
+            myDir = new File(pathToSave);
+            myDir.mkdirs();
+
+            // create a new file, to save the downloaded file
+
+            String mFileName = fileName;
+            File file = new File(myDir, mFileName);
+
+            FileOutputStream fileOutput = new FileOutputStream(file);
+
+            // Stream used for reading the data from the internet
+            InputStream inputStream = urlConnection.getInputStream();
+
+            // this is the total size of the file which we are downloading
+            totalSize = urlConnection.getContentLength();
+
+            // runOnUiThread(new Runnable() {
+            // public void run() {
+            // pb.setMax(totalSize);
+            // }
+            // });
+
+            // create a buffer...
+            byte[] buffer = new byte[1024];
+            int bufferLength = 0;
+
+            while ((bufferLength = inputStream.read(buffer)) > 0) {
+                fileOutput.write(buffer, 0, bufferLength);
+                downloadedSize += bufferLength;
+                // update the progressbar //
+                // runOnUiThread(new Runnable() {
+                // public void run() {
+                // pb.setProgress(downloadedSize);
+                // float per = ((float)downloadedSize/totalSize) * 100;
+                // cur_val.setText("Downloaded " + downloadedSize + "KB / " +
+                // totalSize + "KB (" + (int)per + "%)" );
+                // }
+                // });
+            }
+            // close the output stream when complete //
+            fileOutput.close();
+            // runOnUiThread(new Runnable() {
+            // public void run() {
+            // // pb.dismiss(); // if you want close it..
+            // }
+            // });
+
+        } catch (final MalformedURLException e) {
+            // showError("Error : MalformedURLException " + e);
+            e.printStackTrace();
+        } catch (final IOException e) {
+            // showError("Error : IOException " + e);
+            e.printStackTrace();
+        } catch (final Exception e) {
+            // showError("Error : Please check your internet connection " + e);
+        }
+    }
 
     public void loadDaysOfAlarm(){
         checkDaysOfAlarmArray(sun);

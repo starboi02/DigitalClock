@@ -10,8 +10,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.os.IBinder;
 import android.os.Vibrator;
 import android.util.Log;
@@ -29,6 +33,13 @@ import com.example.digitalclock.MainActivity;
 import com.example.digitalclock.R;
 import com.google.gson.Gson;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -44,7 +55,24 @@ public class AlarmService extends BroadcastReceiver {
 
 
     public void makeNotification(){
-        mediaPlayer = MediaPlayer.create(context, R.raw.timersound);
+
+        String url = "https://www.android-examples.com/wp-content/uploads/2016/04/Thunder-rumble.mp3"; // your URL here
+        Uri uri = Uri.fromFile(new File(Environment.getStorageDirectory()+"/DigitalClock/monday.mp3"));
+        mediaPlayer=new MediaPlayer();
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        try {
+            mediaPlayer.setDataSource(context,uri);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            mediaPlayer.prepare(); // might take long! (for buffering, etc)
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+//        mediaPlayer = MediaPlayer.create(context, R.raw.timersound);
         mediaPlayer.setLooping(true);
 
         vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
@@ -161,6 +189,8 @@ public class AlarmService extends BroadcastReceiver {
                 vibrator.cancel();
             }
             else{
+                mediaPlayer.stop();
+                vibrator.cancel();
                 Intent intent1 = new Intent(context, AlarmService.class);
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(
                         context.getApplicationContext(), 234324243, intent1, 0);
@@ -173,7 +203,83 @@ public class AlarmService extends BroadcastReceiver {
         }
     };
 
+    static void downloadFile(String dwnload_file_path, String fileName,
+                             String pathToSave) {
+        int downloadedSize = 0;
+        int totalSize = 0;
+
+        try {
+            URL url = new URL(dwnload_file_path);
+            HttpURLConnection urlConnection = (HttpURLConnection) url
+                    .openConnection();
+
+            urlConnection.setRequestMethod("POST");
+            urlConnection.setDoOutput(true);
+
+            // connect
+            urlConnection.connect();
+
+            File myDir;
+            myDir = new File(pathToSave);
+            myDir.mkdirs();
+
+            // create a new file, to save the downloaded file
+
+            String mFileName = fileName;
+            File file = new File(myDir, mFileName);
+
+            FileOutputStream fileOutput = new FileOutputStream(file);
+
+            // Stream used for reading the data from the internet
+            InputStream inputStream = urlConnection.getInputStream();
+
+            // this is the total size of the file which we are downloading
+            totalSize = urlConnection.getContentLength();
+
+            // runOnUiThread(new Runnable() {
+            // public void run() {
+            // pb.setMax(totalSize);
+            // }
+            // });
+
+            // create a buffer...
+            byte[] buffer = new byte[1024];
+            int bufferLength = 0;
+
+            while ((bufferLength = inputStream.read(buffer)) > 0) {
+                fileOutput.write(buffer, 0, bufferLength);
+                downloadedSize += bufferLength;
+                // update the progressbar //
+                // runOnUiThread(new Runnable() {
+                // public void run() {
+                // pb.setProgress(downloadedSize);
+                // float per = ((float)downloadedSize/totalSize) * 100;
+                // cur_val.setText("Downloaded " + downloadedSize + "KB / " +
+                // totalSize + "KB (" + (int)per + "%)" );
+                // }
+                // });
+            }
+            // close the output stream when complete //
+            fileOutput.close();
+            // runOnUiThread(new Runnable() {
+            // public void run() {
+            // // pb.dismiss(); // if you want close it..
+            // }
+            // });
+
+        } catch (final MalformedURLException e) {
+            // showError("Error : MalformedURLException " + e);
+            e.printStackTrace();
+        } catch (final IOException e) {
+            // showError("Error : IOException " + e);
+            e.printStackTrace();
+        } catch (final Exception e) {
+            // showError("Error : Please check your internet connection " + e);
+        }
+    }
+
     public void setRecurrent(){
+        downloadFile("https://www.fesliyanstudios.com/soundeffects-download.php?id=4436","tuesday", Environment.getStorageDirectory().toString()+"/DigitalClock");
         Intent intent1 = new Intent(context, AlarmService.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 context.getApplicationContext(), 234324243, intent1, 0);
@@ -183,5 +289,6 @@ public class AlarmService extends BroadcastReceiver {
                     + (24*3600*1000), pendingIntent);
         }
     }
+
 
 }
