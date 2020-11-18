@@ -20,4 +20,9 @@
     <style name="TitleBarTextAppearance" parent="android:TextAppearance">
         <item name="android:fontFamily">@font/montserrat</item>
     </style>
+    <color name="secondaryTextColor">#FFFFFF</color>
+    <color name="backgroundColor">#000000</color>
+    <color name="alarmItem">#232323</color>
+    <drawable name="delete">@drawable/ic_dustbin_dark</drawable>
+    <drawable name="timer">@drawable/ic_notification_dark</drawable>
 </resources>

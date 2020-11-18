@@ -29,4 +29,10 @@
         android:label="@string/title_stopwatch"
         tools:layout="@layout/fragment_stopwatch" />
 
+    <fragment
+        android:id="@+id/navigation_settings"
+        android:name="com.example.digitalclock.ui.settings.SettingsFragment"
+        android:label="Settings"
+        />
+
 </navigation>

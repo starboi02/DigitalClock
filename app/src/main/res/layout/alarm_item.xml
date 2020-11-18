@@ -8,7 +8,7 @@
     android:paddingBottom="20dp"
     android:paddingHorizontal="16dp"
     android:paddingTop="12dp"
-    android:background="#212121">
+    android:background="@color/alarmItem">
 
     <TextView
         android:id="@+id/time"
@@ -47,7 +47,7 @@
         android:layout_marginTop="24dp"
         android:fontFamily="@font/montserrat"
         android:text="Repeat"
-        android:textColor="@color/white"
+        android:textColor="@color/purple_200"
         android:textSize="16sp"
         app:layout_constraintStart_toEndOf="@+id/checkbox"
         app:layout_constraintTop_toBottomOf="@+id/time" />
@@ -161,7 +161,7 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_marginTop="24dp"
-        android:src="@drawable/ic_notification"
+        android:src="@drawable/timer"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/days" />
 
@@ -174,7 +174,7 @@
         android:layout_marginTop="22dp"
         android:fontFamily="@font/montserrat"
         android:text="Timer"
-        android:textColor="@color/white"
+        android:textColor="@color/secondaryTextColor"
         android:textSize="16sp"
         app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toBottomOf="@+id/days" />
@@ -184,7 +184,7 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_marginTop="24dp"
-        android:src="@drawable/ic_dustbin"
+        android:src="@drawable/delete"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/days" />
 
@@ -197,7 +197,7 @@
         android:layout_marginRight="20dp"
         android:fontFamily="@font/montserrat"
         android:text="Delete"
-        android:textColor="@color/white"
+        android:textColor="@color/secondaryTextColor"
         android:textSize="16sp"
         app:layout_constraintEnd_toStartOf="@+id/imageView2"
         app:layout_constraintTop_toBottomOf="@+id/days" />

@@ -6,34 +6,48 @@
     android:layout_height="match_parent"
     android:layout_gravity="center"
     tools:context=".ui.clock.ClockFragment">
-
+    <LinearLayout
+        android:id="@+id/layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="100dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:gravity="center_horizontal"
+        >
     <TextView
+        android:layout_gravity="center"
+        android:gravity="center"
         android:id="@+id/analog_time"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:textAlignment="center"
         android:textStyle="bold"
         android:fontFamily="@font/montserrat"
         android:textSize="80sp"
-        android:layout_marginBottom="100dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:gravity="center_horizontal" />
+        />
+    <com.tomerrosenfeld.customanalogclockview.CustomAnalogClock
+        android:id="@+id/analog_clock"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        app:default_watchface="true"
+        />
+    </LinearLayout>
     <TextView
         android:id="@+id/analog_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="8dp"
         android:gravity="center"
-        android:textColor="@color/white"
+        android:textColor="@color/secondaryTextColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/analog_time"
+        app:layout_constraintTop_toBottomOf="@+id/layout"
         android:fontFamily="@font/montserrat"
         android:textSize="20sp"
         />

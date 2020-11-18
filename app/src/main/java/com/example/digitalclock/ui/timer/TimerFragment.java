@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.preference.PreferenceManager;
 
 import com.example.digitalclock.R;
 import com.example.digitalclock.ui.stopwatch.StopwatchFragment;
@@ -41,6 +43,9 @@ public class TimerFragment extends Fragment {
     Thread myThread = null;
     public String displayTime= "00:00:00";
     public MediaPlayer mp;
+    public Vibrator vibrator;
+    public boolean isVibrating=false;
+    long[] pattern = { 0, 10, 100, 1000, 10000 };
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -58,6 +63,11 @@ public class TimerFragment extends Fragment {
         btn.setTag(R.drawable.ic_play);
 
         mp= MediaPlayer.create(getContext(),R.raw.timersound);
+        vibrator=(Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        isVibrating=sharedPreferences.getBoolean("vibrate_timer",false);
+
 
         if(this.getArguments().getBoolean("sound-playing")){
             btn.setTag(R.drawable.ic_pause);
@@ -130,6 +140,8 @@ public class TimerFragment extends Fragment {
 
                     if(mp.isPlaying()) {
                         mp.stop();
+                        if(isVibrating)
+                            vibrator.cancel();
                         //mp.release();
                         delete();
                     }
@@ -205,6 +217,7 @@ public class TimerFragment extends Fragment {
 
         if(mp.isPlaying()) {
             mp.stop();
+            vibrator.cancel();
             //mp.release();
         }
 
@@ -224,6 +237,11 @@ public class TimerFragment extends Fragment {
     }
 
     public void playSound(){
+
+        if(isVibrating){
+            vibrator.vibrate(pattern,0);
+        }
+
         mp.start();
         mp.setLooping(true);
     }

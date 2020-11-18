@@ -1,0 +1,76 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="Clock">
+
+        <ListPreference
+            app:defaultValue="Digital"
+            app:entries="@array/clock_type_entries"
+            app:entryValues="@array/clock_type_entries"
+            app:key="clock_type"
+            app:title="Clock Type"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:defaultValue="24"
+            app:entries="@array/hour_format_entries"
+            app:entryValues="@array/hour_format_entries"
+            app:key="hour_format"
+            app:title="Hour Format"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:defaultValue="GMT+5:30"
+            app:entries="@array/time_zone_entries"
+            app:entryValues="@array/time_zone_values"
+            app:key="time_zone"
+            app:title="Time Zone"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:defaultValue="M"
+            app:entries="@array/font_entries"
+            app:entryValues="@array/font_values"
+            app:key="font"
+            app:title="Clock Font"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:defaultValue="EE, dd MMM yyyy"
+            app:entries="@array/date_format_entries"
+            app:entryValues="@array/date_format_values"
+            app:key="date_format"
+            app:title="Date Format"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Alarm">
+
+        <SwitchPreferenceCompat
+            app:defaultValue="true"
+            app:key="vibrate_alarm"
+            app:title="Vibrate"
+            />
+
+        <ListPreference
+            app:key="snooze_time"
+            app:title="Snooze Length"
+            app:entries="@array/alarm_snooze_length_entries"
+            app:entryValues="@array/alarm_snooze_length_entries"
+            app:useSimpleSummaryProvider="true"
+            app:defaultValue="10 minutes"
+            />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Timer">
+
+        <SwitchPreferenceCompat
+            app:defaultValue="false"
+            app:key="vibrate_timer"
+            app:title="Vibrate"
+            />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

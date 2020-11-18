@@ -1,0 +1,59 @@
+<resources>
+
+    <string-array name="clock_type_entries">
+        <item>Digital</item>
+        <item>Analog</item>
+    </string-array>
+
+    <string-array name="alarm_snooze_length_entries">
+        <item>1 minute</item>
+        <item>5 minutes</item>
+        <item>10 minutes</item>
+        <item>15 minutes</item>
+        <item>20 minutes</item>
+    </string-array>
+
+    <string-array name="hour_format_entries">
+        <item>24</item>
+        <item>12</item>
+    </string-array>
+
+    <string-array name="time_zone_entries">
+        <item>(GMT+5:30) Kolkata</item>
+        <item>(GMT+10:00) Brisbane</item>
+        <item>(GMT+0:00) London</item>
+        <item>(GMT-7:00) Arizona</item>
+        <item>(GMT-10:00) Hawaii</item>
+    </string-array>
+
+    <string-array name="time_zone_values">
+        <item>GMT+5:30</item>
+        <item>GMT+10:00</item>
+        <item>GMT+0:00</item>
+        <item>GMT-7:00</item>
+        <item>GMT-10:00</item>
+    </string-array>
+
+    <string-array name="font_entries">
+        <item>Montserrat</item>
+        <item>Digital</item>
+    </string-array>
+
+    <string-array name="font_values">
+        <item>M</item>
+        <item>D</item>
+    </string-array>
+
+    <string-array name="date_format_values">
+        <item>EE, dd MMM yyyy</item>
+        <item>dd-MM-yy EEE</item>
+        <item>dd MMM EE, yyyy</item>
+    </string-array>
+
+    <string-array name="date_format_entries">
+        <item>Fri, 22 Feb 2002</item>
+        <item>22–02–02 Friday</item>
+        <item>22 February Fri, 2002</item>
+    </string-array>
+
+</resources>

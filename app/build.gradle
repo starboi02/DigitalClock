@@ -42,6 +42,8 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'androidx.work:work-runtime:2.4.0'
     implementation 'net.danlew:android.joda:2.10.7.1'
+    implementation 'com.tomerrosenfeld.customanalogclockview:custom-analog-clock-view:1.1'
+    implementation 'androidx.preference:preference:1.1.1'
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
