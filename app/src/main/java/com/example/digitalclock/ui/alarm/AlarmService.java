@@ -90,6 +90,9 @@ public class AlarmService extends BroadcastReceiver {
             }
         });
 
+//        mediaPlayer = MediaPlayer.create(context,R.raw.timersound);
+//        mediaPlayer.setLooping(true);
+//        mediaPlayer.start();
 
 
         vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
@@ -112,6 +115,7 @@ public class AlarmService extends BroadcastReceiver {
                         .setContentTitle("Alarm")
                         .setContentText(alarmItem.getTime())
                         .setAutoCancel(false)
+                        .setOngoing(true)
                         .addAction(2,"Snooze",snoozePendingIntent)
                         .addAction(3,"Dismiss",dismissPendingIntent)
                         .setDefaults(NotificationCompat.DEFAULT_ALL)
@@ -130,7 +134,6 @@ public class AlarmService extends BroadcastReceiver {
         notificationManager.notify(1, notificationBuilder.build());
 
 
-        //mediaPlayer.start();
         if(isVibrating)
         vibrator.vibrate(pattern,0);
     }

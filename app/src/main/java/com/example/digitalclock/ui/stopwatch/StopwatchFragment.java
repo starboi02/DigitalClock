@@ -1,17 +1,22 @@
 package com.example.digitalclock.ui.stopwatch;
 
-import androidx.lifecycle.Observer;
+import androidx.core.app.NotificationCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.app.AlarmManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,16 +26,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.digitalclock.R;
-import com.example.digitalclock.ui.alarm.AlarmViewModel;
-import com.example.digitalclock.ui.clock.ClockFragment;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+
+import static android.content.Context.ALARM_SERVICE;
 
 public class StopwatchFragment extends Fragment {
 
@@ -48,7 +47,7 @@ public class StopwatchFragment extends Fragment {
     public long startTime,prevTime=0,elapsedMiliseconds;
     private int seconds = 0;
     private boolean running=false;
-    private boolean wasRunning;
+    private boolean wasRunning=false;
     Thread myThread = null;
 
     @Override
@@ -74,7 +73,7 @@ public class StopwatchFragment extends Fragment {
         });
 
         SharedPreferences preferences =getActivity().getSharedPreferences("stopwatch_running",Context.MODE_PRIVATE);
-        boolean wasRunning = preferences.getBoolean("wasRunning",false);
+        wasRunning = preferences.getBoolean("wasRunning",false);
 
         Log.d("thread_running",String.valueOf(running));
 
@@ -117,13 +116,20 @@ public class StopwatchFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        //myThread.stop();
-        //running = false;
-        SharedPreferences.Editor editor = getActivity().getSharedPreferences("stopwatch_running", Context.MODE_PRIVATE).edit();
+
+        SharedPreferences.Editor editor = getContext().getSharedPreferences("stopwatch_running", Context.MODE_PRIVATE).edit();
         editor.putBoolean("wasRunning",running);
         editor.putLong("startTime",startTime);
         editor.putLong("prevTime",prevTime);
         editor.apply();
+
+        Intent intent = new Intent(getContext(), StopwatchBroadcastReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                getContext(), 234324, intent, 0);
+        AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(ALARM_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pendingIntent);
+        }
 
         Log.d("stopwatch","paused");
     }
@@ -131,6 +137,43 @@ public class StopwatchFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
+        SharedPreferences preferences= getContext().getSharedPreferences("stopwatch_running",Context.MODE_PRIVATE);
+        if(preferences.getBoolean("wasRunning",false)){
+            Log.d("sender", "Broadcasting message of Alarm action");
+            Intent intent = new Intent("stopwatch-action");
+            intent.putExtra("message", "stop");
+            LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
+
+            NotificationManager manager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+            manager.cancel(111);
+
+            PendingIntent resultPendingIntent = PendingIntent.getActivity(getContext(), 0, new Intent(), 0);
+            NotificationCompat.Builder mb = new NotificationCompat.Builder(getContext());
+            mb.setContentIntent(resultPendingIntent);
+
+            NotificationManager manager1 = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+            manager1.cancel(112);
+
+            PendingIntent resultPendingIntent1 = PendingIntent.getActivity(getContext(), 0, new Intent(), 0);
+            NotificationCompat.Builder mb1 = new NotificationCompat.Builder(getContext());
+            mb.setContentIntent(resultPendingIntent1);
+
+        }
+
+
+
+        else{
+            running=false;
+            imageButton.setImageResource(R.drawable.ic_play);
+            imageButton.setTag(R.drawable.ic_play);
+            prevTime=0;
+            startTime=0;
+            textView.setText("00:00:00 00");
+            restart.setVisibility(View.VISIBLE);
+        }
+
+
         Log.d("stopwatch","resumed");
     }
 

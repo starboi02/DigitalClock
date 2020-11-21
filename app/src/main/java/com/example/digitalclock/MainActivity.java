@@ -14,12 +14,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Switch;
 import android.widget.Toast;
 
-import com.example.digitalclock.ui.timer.TimerFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.tomerrosenfeld.customanalogclockview.CustomAnalogClock;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -48,23 +45,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         ActivityCompat.requestPermissions(MainActivity.this,
-                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 1);
 
         mp= MediaPlayer.create(this,R.raw.timersound);
-
-        SharedPreferences.Editor editor = getSharedPreferences("stopwatch_running", Context.MODE_PRIVATE).edit();
-        editor.putBoolean("wasRunning",false);
-        editor.putLong("startTime",0);
-        editor.apply();
 
         timerToast=Toast.makeText(MainActivity.this,"Timer finished!",Toast.LENGTH_LONG);
 
         navView = findViewById(R.id.nav_view);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
+
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.navigation_clock, R.id.navigation_alarm, R.id.navigation_timer,R.id.navigation_stopwatch)
                 .build();
@@ -82,8 +73,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
-                new IntentFilter("timer"));
+//        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
+//                new IntentFilter("timer"));
 
     }
 
@@ -113,24 +104,24 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if(intent.hasExtra("timer-time")) {
-                timerTime = intent.getLongExtra("timer-time", 0);
-                Log.d("timer-value-received-m", String.valueOf(timerTime));
-                running=true;
-                Runnable runnable = new TimeShow();
-                timerThread = new Thread(runnable);
-                timerThread.start();
-            }
-            else if(intent.hasExtra("stop-sound")){
-                stopSound();
-            }
-
-            Log.d("receiver", "Got message: " + timerTime);
-        }
-    };
+//    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            if(intent.hasExtra("timer-time")) {
+//                timerTime = intent.getLongExtra("timer-time", 0);
+//                Log.d("timer-value-received-m", String.valueOf(timerTime));
+//                running=true;
+//                Runnable runnable = new TimeShow();
+//                timerThread = new Thread(runnable);
+//                timerThread.start();
+//            }
+//            else if(intent.hasExtra("stop-sound")){
+//                stopSound();
+//            }
+//
+//            Log.d("receiver", "Got message: " + timerTime);
+//        }
+//    };
 
     public boolean isCurrentFragmentSame(MenuItem item,NavController navController ){
         return navController.getCurrentDestination().getId() == item.getItemId();
@@ -185,17 +176,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onPause(){
+        super.onPause();
+        Log.d("main activity","paused");
+    }
+
+    @Override
     public void onDestroy(){
         super.onDestroy();
         running=false;
         Log.d("MainActivity","destroyed");
 
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+        //LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
 
-        SharedPreferences.Editor editor = getSharedPreferences("stopwatch_running", Context.MODE_PRIVATE).edit();
-        editor.putBoolean("wasRunning",false);
-        editor.putLong("startTime",0);
-        editor.apply();
+//        SharedPreferences.Editor editor = getSharedPreferences("stopwatch_running", Context.MODE_PRIVATE).edit();
+//        editor.putBoolean("wasRunning",false);
+//        editor.putLong("startTime",0);
+//        editor.apply();
+
 
     }
 

@@ -25,6 +25,9 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.preference.PreferenceManager;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import com.example.digitalclock.R;
 import com.example.digitalclock.ui.stopwatch.StopwatchFragment;
@@ -212,9 +215,14 @@ public class TimerFragment extends Fragment {
     public void onPause() {
         super.onPause();
 
-        if(running)
-            sendMessage();
-
+        if(running) {
+            //sendMessage();
+            Data data = new Data.Builder()
+                    .putLong("timerTime", timerTime)
+                    .build();
+            final OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(TimerWorker.class).setInputData(data).build();
+            WorkManager.getInstance().enqueue(workRequest);
+        }
         if(mp.isPlaying()) {
             mp.stop();
             vibrator.cancel();
