@@ -29,9 +29,11 @@ import android.widget.ToggleButton;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
@@ -77,6 +79,7 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
     LinearLayout days;
     TextView delete,timer;
     TextView sun,mon,tue,wed,thu,fri,sat;
+    ConstraintLayout rootLayout;
     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
     SimpleDateFormat sdf1 = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
     ArrayList<String> daysOfWeek= new ArrayList<>(Arrays.asList("Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"));
@@ -95,6 +98,7 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
         minute=root.findViewById(R.id.minute);
         edit =root.findViewById(R.id.edit);
         item=root.findViewById(R.id.item);
+        rootLayout=root.findViewById(R.id.rootLayout);
         toggle=item.findViewById(R.id.toggle);
         checkBox=item.findViewById(R.id.checkbox);
         days=item.findViewById(R.id.days);
@@ -124,6 +128,11 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
         fri.setTag("Friday");
         sat.setOnClickListener(this);
         sat.setTag("Saturday");
+
+        SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getContext());
+
+        String background_color_hex=sharedPreferences.getString("background_color","121212");
+        rootLayout.setBackgroundColor(Color.parseColor("#"+background_color_hex));
 
         SharedPreferences preferences =getActivity().getSharedPreferences("alarm",Context.MODE_PRIVATE);
         if(preferences.getInt("count",0)==1){

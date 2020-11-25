@@ -66,33 +66,37 @@ public class AlarmService extends BroadcastReceiver {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Log.d("path-name",Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+"/"+daysOfWeek.get(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)-1)+x+".mp3");
         }
-        Uri uri = Uri.fromFile(new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),daysOfWeek.get(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)-1)+ x+".mp3"));
-        mediaPlayer=new MediaPlayer();
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .build());
-        } else {
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        }
-        try {
-            mediaPlayer.setDataSource(context,uri);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        mediaPlayer.prepareAsync();
-        mediaPlayer.setLooping(true);
-        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mediaPlayer) {
-                mediaPlayer.start();
+        File file =new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),daysOfWeek.get(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)-1)+ x+".mp3");
+        if(file.exists()) {
+            Uri uri = Uri.fromFile(new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), daysOfWeek.get(Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1) + x + ".mp3"));
+            mediaPlayer = new MediaPlayer();
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .build());
+            } else {
+                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             }
-        });
-
-//        mediaPlayer = MediaPlayer.create(context,R.raw.timersound);
-//        mediaPlayer.setLooping(true);
-//        mediaPlayer.start();
+            try {
+                mediaPlayer.setDataSource(context, uri);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            mediaPlayer.prepareAsync();
+            mediaPlayer.setLooping(true);
+            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mediaPlayer) {
+                    mediaPlayer.start();
+                }
+            });
+        }
+        else {
+        mediaPlayer = MediaPlayer.create(context,R.raw.timersound);
+        mediaPlayer.setLooping(true);
+        mediaPlayer.start();
+        }
 
 
         vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);

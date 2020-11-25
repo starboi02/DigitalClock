@@ -56,4 +56,35 @@
         <item>22 February Fri, 2002</item>
     </string-array>
 
+    <string-array name="text_size_entries">
+        <item>Small</item>
+        <item>Medium</item>
+        <item>Large</item>
+    </string-array>
+
+    <string-array name="background_color_entries">
+        <item>Light Gray</item>
+        <item>Gray</item>
+        <item>Dark Gray</item>
+    </string-array>
+
+    <string-array name="background_color_values">
+        <item>121212</item>
+        <item>212121</item>
+        <item>474747</item>
+    </string-array>
+
+    <string-array name="text_color_entries">
+        <item>White</item>
+        <item>Gray</item>
+        <item>Dark Gray</item>
+    </string-array>
+
+    <string-array name="text_color_values">
+        <item>FFFFFF</item>
+        <item>888888</item>
+        <item>606060</item>
+    </string-array>
+
+
 </resources>

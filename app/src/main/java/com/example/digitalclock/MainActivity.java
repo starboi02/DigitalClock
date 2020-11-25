@@ -30,11 +30,6 @@ import androidx.navigation.ui.NavigationUI;
 
 public class MainActivity extends AppCompatActivity {
 
-    Thread timerThread;
-    public boolean running=false;
-    public long timerTime=0;
-    MediaPlayer mp;
-    Toast timerToast;
     BottomNavigationView navView;
     NavController navController;
     MenuItem settings;
@@ -48,9 +43,6 @@ public class MainActivity extends AppCompatActivity {
                 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 1);
 
-        mp= MediaPlayer.create(this,R.raw.timersound);
-
-        timerToast=Toast.makeText(MainActivity.this,"Timer finished!",Toast.LENGTH_LONG);
 
         navView = findViewById(R.id.nav_view);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -73,8 +65,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
-//                new IntentFilter("timer"));
 
     }
 
@@ -84,44 +74,18 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case 1: {
 
-                // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
                 } else {
 
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                    Toast.makeText(MainActivity.this, "Permission denied to read your External storage", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MainActivity.this, "Permission denied to read your External storage", Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
 
-            // other 'case' lines to check for other
-            // permissions this app might request
         }
     }
-
-//    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            if(intent.hasExtra("timer-time")) {
-//                timerTime = intent.getLongExtra("timer-time", 0);
-//                Log.d("timer-value-received-m", String.valueOf(timerTime));
-//                running=true;
-//                Runnable runnable = new TimeShow();
-//                timerThread = new Thread(runnable);
-//                timerThread.start();
-//            }
-//            else if(intent.hasExtra("stop-sound")){
-//                stopSound();
-//            }
-//
-//            Log.d("receiver", "Got message: " + timerTime);
-//        }
-//    };
 
     public boolean isCurrentFragmentSame(MenuItem item,NavController navController ){
         return navController.getCurrentDestination().getId() == item.getItemId();
@@ -129,17 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void navigate(MenuItem item,NavController navController){
 
-        if(item.getItemId()==R.id.navigation_timer){
-            running=false;
-            Bundle bundle = new Bundle();
-            bundle.putBoolean("sound-playing", mp.isPlaying());
-            bundle.putLong("timer-time",timerTime);
-            timerTime=0;
-            navController.navigate(item.getItemId(),bundle);
-        }
-        else{
             navController.navigate(item.getItemId());
-        }
 
     }
 
@@ -155,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
         settings.setVisible(true);
         navView.setVisibility(View.VISIBLE);
         navController.navigate(R.id.navigation_clock);
-        //super.onBackPressed();
     }
 
     @Override
@@ -164,7 +117,6 @@ public class MainActivity extends AppCompatActivity {
         if(item.getItemId()==R.id.settings) {
             navController.navigate(R.id.navigation_settings);
             navView.setVisibility(View.GONE);
-            //item.setVisible(false);
             settings.setVisible(false);
         }
         else{
@@ -184,53 +136,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy(){
         super.onDestroy();
-        running=false;
         Log.d("MainActivity","destroyed");
-
-        //LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
-
-//        SharedPreferences.Editor editor = getSharedPreferences("stopwatch_running", Context.MODE_PRIVATE).edit();
-//        editor.putBoolean("wasRunning",false);
-//        editor.putLong("startTime",0);
-//        editor.apply();
-
-
     }
 
-    public void playSound(){
-        mp.start();
-        mp.setLooping(true);
-    }
-
-    public void stopSound(){
-        mp.stop();
-        //mp.release();
-    }
-
-    class TimeShow implements Runnable{
-        public void run() {
-            while(!Thread.currentThread().isInterrupted()){
-                try {
-                    if(running) {
-                        timerTime=timerTime-1;
-                        if (timerTime < 0) {
-                            playSound();
-                            timerToast.show();
-                            running=false;
-                        }
-                        Log.d("timer-main-thread","running");
-                        Thread.sleep(1000);
-                    }
-
-                } catch (InterruptedException e) {
-                    Log.d("timer-thread","interrupted-exception");
-                    Thread.currentThread().interrupt();
-                }catch(Exception e){
-                    Log.d("timer-thread","interrupted");
-                    Thread.currentThread().interrupt();
-                }
-            }
-        }
-    }
 
 }

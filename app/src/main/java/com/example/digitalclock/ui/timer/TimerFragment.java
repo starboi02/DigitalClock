@@ -1,9 +1,14 @@
 package com.example.digitalclock.ui.timer;
 
+import android.app.AlarmManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
@@ -19,6 +24,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
@@ -30,9 +37,13 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
 import com.example.digitalclock.R;
+import com.example.digitalclock.ui.stopwatch.StopwatchBroadcastReceiver;
 import com.example.digitalclock.ui.stopwatch.StopwatchFragment;
 
+import java.security.Timestamp;
 import java.util.concurrent.TimeUnit;
+
+import static android.content.Context.ALARM_SERVICE;
 
 public class TimerFragment extends Fragment {
 
@@ -41,14 +52,16 @@ public class TimerFragment extends Fragment {
     public TextView delete,reset,time;
     public long timerTime=0;
     public LinearLayout linearLayout;
-    public boolean running =false,soundPlaying=false;
-    public long startTime,currentTime,pausedTime,tempTime;
+    public boolean running =false;
+    public long startTime;
     Thread myThread = null;
     public String displayTime= "00:00:00";
     public MediaPlayer mp;
     public Vibrator vibrator;
     public boolean isVibrating=false;
+    ConstraintLayout rootLayout;
     long[] pattern = { 0, 10, 100, 1000, 10000 };
+    SharedPreferences sharedPreferences;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -62,33 +75,25 @@ public class TimerFragment extends Fragment {
         reset=root.findViewById(R.id.reset);
         time=root.findViewById(R.id.time);
         linearLayout=root.findViewById(R.id.edit);
+        rootLayout=root.findViewById(R.id.rootLayout);
+
+        SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getContext());
+
+        String background_color_hex=sharedPreferences.getString("background_color","121212");
+        rootLayout.setBackgroundColor(Color.parseColor("#"+background_color_hex));
+
+
 
         btn.setTag(R.drawable.ic_play);
 
         mp= MediaPlayer.create(getContext(),R.raw.timersound);
         vibrator=(Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        isVibrating=sharedPreferences.getBoolean("vibrate_timer",false);
+        SharedPreferences sharedPreferences1 = PreferenceManager.getDefaultSharedPreferences(getContext());
+        isVibrating=sharedPreferences1.getBoolean("vibrate_timer",false);
 
+        sharedPreferences = getContext().getSharedPreferences("timer_running",Context.MODE_PRIVATE);
 
-        if(this.getArguments().getBoolean("sound-playing")){
-            btn.setTag(R.drawable.ic_pause);
-            btn.setImageResource(R.drawable.ic_stop);
-            linearLayout.setVisibility(View.INVISIBLE);
-            time.setVisibility(View.VISIBLE);
-            soundPlaying=true;
-        }
-        else if(this.getArguments().getLong("timer-time",0)!=0){
-            timerTime=this.getArguments().getLong("timer-time");
-            Log.d("timer-value-received-t", String.valueOf(timerTime));
-            running=true;
-            linearLayout.setVisibility(View.INVISIBLE);
-            time.setVisibility(View.VISIBLE);
-            btn.setTag(R.drawable.ic_pause);
-            btn.setImageResource(R.drawable.ic_pause);
-            delete.setVisibility(View.VISIBLE);
-        }
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,16 +141,11 @@ public class TimerFragment extends Fragment {
                     delete.setVisibility(View.VISIBLE);
                     reset.setVisibility(View.VISIBLE);
 
-                    if(soundPlaying) {
-                        sendStopMessage();
-                        delete();
-                    }
 
                     if(mp.isPlaying()) {
                         mp.stop();
                         if(isVibrating)
                             vibrator.cancel();
-                        //mp.release();
                         delete();
                     }
 
@@ -196,7 +196,6 @@ public class TimerFragment extends Fragment {
                             reset.setVisibility(View.INVISIBLE);
                             running=false;
                         }
-                        Log.d("timer","running");
                         Thread.sleep(1000);
                     }
 
@@ -214,25 +213,76 @@ public class TimerFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
+        sharedPreferences = getContext().getSharedPreferences("timer_running",Context.MODE_PRIVATE);
+
+        SharedPreferences.Editor edit=sharedPreferences.edit();
+        edit.putBoolean("wasRunning",running);
+        edit.putLong("timerTime",timerTime);
+        edit.putLong("startTime",startTime);
+        edit.apply();
 
         if(running) {
-            //sendMessage();
-            Data data = new Data.Builder()
-                    .putLong("timerTime", timerTime)
-                    .build();
-            final OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(TimerWorker.class).setInputData(data).build();
-            WorkManager.getInstance().enqueue(workRequest);
+
+
+
+            Log.d("timerTime",String.valueOf(timerTime));
+
+            Intent intent = new Intent(getContext(), TimerBroadcastReceiver.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                    getContext(), 2343, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(ALARM_SERVICE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.nanoTime()/1000000, pendingIntent);
+            }
+            Log.d("timer-fragment-paused", String.valueOf(System.nanoTime()/1000000000));
         }
         if(mp.isPlaying()) {
             mp.stop();
             vibrator.cancel();
-            //mp.release();
         }
 
         running=false;
 
 
         Log.d("stopwatch","paused");
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        sharedPreferences = getContext().getSharedPreferences("timer_running",Context.MODE_PRIVATE);
+        if(sharedPreferences.getBoolean("wasRunning",false)){
+
+            NotificationManager manager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+            manager.cancel(11111111);
+
+            PendingIntent resultPendingIntent = PendingIntent.getActivity(getContext(), 0, new Intent(), 0);
+            NotificationCompat.Builder mb = new NotificationCompat.Builder(getContext());
+            mb.setContentIntent(resultPendingIntent);
+
+            linearLayout.setVisibility(View.INVISIBLE);
+            time.setVisibility(View.VISIBLE);
+            delete.setVisibility(View.VISIBLE);
+            reset.setVisibility(View.VISIBLE);
+
+            btn.setImageResource(R.drawable.ic_pause);
+            btn.setTag(R.drawable.ic_pause);
+
+
+            timerTime=sharedPreferences.getLong("timerTime",0);
+            startTime=sharedPreferences.getLong("startTime",0);
+            running=true;
+        }
+        else{
+            linearLayout.setVisibility(View.VISIBLE);
+            time.setVisibility(View.INVISIBLE);
+            delete.setVisibility(View.INVISIBLE);
+            reset.setVisibility(View.INVISIBLE);
+            timerTime=0;
+
+            btn.setImageResource(R.drawable.ic_play);
+            btn.setTag(R.drawable.ic_play);
+        }
     }
 
 
@@ -269,19 +319,5 @@ public class TimerFragment extends Fragment {
         running=false;
     }
 
-    private void sendMessage() {
-        Log.d("sender", "Broadcasting message time");
-        Intent intent = new Intent("timer");
-        intent.putExtra("timer-time",timerTime);
-        Log.d("timer-time-sent", String.valueOf(timerTime));
-        LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
-    }
-
-    private void sendStopMessage(){
-        Log.d("sender", "Broadcasting message stop");
-        Intent intent = new Intent("timer");
-        intent.putExtra("stop-sound",true);
-        LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
-    }
 
 }

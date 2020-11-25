@@ -141,6 +141,8 @@ public class StopwatchService extends Service {
                 NotificationCompat.Builder mb = new NotificationCompat.Builder(context);
                 mb.setContentIntent(resultPendingIntent);
 
+                LocalBroadcastManager.getInstance(context).unregisterReceiver(mMessageReceiver);
+
                 stopSelf();
             }
         }

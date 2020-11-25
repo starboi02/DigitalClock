@@ -45,6 +45,17 @@
         </receiver>
         <service android:name=".ui.stopwatch.StopwatchService"/>
         <receiver android:name=".ui.stopwatch.StopwatchButtonReceiver"/>
+        <service android:name=".ui.timer.TimerService"/>
+        <receiver android:name=".ui.timer.TimerButtonReceiver"/>
+        <receiver android:name=".ui.timer.TimerBroadcastReceiver"
+            android:directBootAware="true"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
