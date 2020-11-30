@@ -77,7 +77,7 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
     SwitchMaterial toggle;
     CheckBox checkBox;
     LinearLayout days;
-    TextView delete,timer;
+    TextView delete;
     TextView sun,mon,tue,wed,thu,fri,sat;
     ConstraintLayout rootLayout;
     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
@@ -103,7 +103,6 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
         checkBox=item.findViewById(R.id.checkbox);
         days=item.findViewById(R.id.days);
         delete=item.findViewById(R.id.delete);
-        timer=item.findViewById(R.id.timer);
         textView=item.findViewById(R.id.time);
         repeat_text=item.findViewById(R.id.repeat_text);
         sun=item.findViewById(R.id.sunday);

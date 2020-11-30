@@ -36,6 +36,7 @@ import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
+import com.example.digitalclock.MainActivity;
 import com.example.digitalclock.R;
 import com.example.digitalclock.ui.stopwatch.StopwatchBroadcastReceiver;
 import com.example.digitalclock.ui.stopwatch.StopwatchFragment;
@@ -118,8 +119,8 @@ public class TimerFragment extends Fragment {
 
                     if(timerTime==0) {
                         timerTime = Integer.parseInt(s) + Integer.parseInt(m) * 60 + Integer.parseInt(h) * 60 * 60;
-                        timerTime++;
                         startTime=timerTime;
+                        Log.d("startTime", String.valueOf(startTime));
                     }
                     linearLayout.setVisibility(View.INVISIBLE);
                     time.setVisibility(View.VISIBLE);
@@ -163,7 +164,8 @@ public class TimerFragment extends Fragment {
                 btn.setImageResource(R.drawable.ic_play);
                 btn.setTag(R.drawable.ic_play);
                 running=false;
-                updateTime(startTime);
+                //Log.d("startTime", String.valueOf(startTime));
+                updateTime(startTime*1000);
             }
         });
 
@@ -181,6 +183,18 @@ public class TimerFragment extends Fragment {
         return root;
     }
 
+    public void changeUI(){
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                btn.setImageResource(R.drawable.ic_stop);
+                btn.setTag(R.drawable.ic_stop);
+            }
+        });
+    }
+
+
+
     class TimeShow implements Runnable{
         public void run() {
             while(!Thread.currentThread().isInterrupted()){
@@ -192,6 +206,7 @@ public class TimerFragment extends Fragment {
                         }
                         else {
                             playSound();
+                            changeUI();
                             delete.setVisibility(View.INVISIBLE);
                             reset.setVisibility(View.INVISIBLE);
                             running=false;
@@ -287,6 +302,9 @@ public class TimerFragment extends Fragment {
 
 
     private void updateTime(long updatedTime) {
+
+        //Log.d("startTime", String.valueOf(updatedTime));
+
         String hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(updatedTime),
                 TimeUnit.MILLISECONDS.toMinutes(updatedTime) % TimeUnit.HOURS.toMinutes(1),
                 TimeUnit.MILLISECONDS.toSeconds(updatedTime) % TimeUnit.MINUTES.toSeconds(1));
